@@ -27,7 +27,7 @@ namespace ALfredoMochileiro
             }
             for (int i = 0; i < 8; i++)
             {
-                Console.WriteLine("Mochila " + i + "\n" + populacao[i]);
+                Console.WriteLine("Mochila " + (i+1) + "\n" + populacao[i]);
             }
 
         }

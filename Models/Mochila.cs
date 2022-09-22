@@ -17,7 +17,11 @@ namespace ALfredoMochileiro.Models
         {
             this.CapacidadeMaxima = capacidadeMaxima;
             var rand = new Random();
-            int numItens = rand.Next(itensDisponiveis.Count()) + 1;
+            int numItens = rand.Next(itensDisponiveis.Count());
+            if (numItens == 0)
+            {
+                numItens++;
+            }
             for (int i = 0; i < numItens; i++)
             {
                 int id = rand.Next(itensDisponiveis.Count());
@@ -30,12 +34,13 @@ namespace ALfredoMochileiro.Models
 
         public override string ToString()
         {
-            string retorno = "\t";
+            string retorno = "";
             foreach (Item item in Itens)
             {
-                retorno += item.ToString() + "\n\t";
+                retorno += "\t" + item.ToString() + "\n";
             }
-            retorno += "Capacidade: " + this.Capacidade;
+            retorno += "Capacidade: " + this.Capacidade + "\n";
+            retorno += "Preço Total: " + this.PrecoTotal + "\n";
             return retorno;
         }
     }
