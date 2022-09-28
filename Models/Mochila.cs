@@ -17,11 +17,9 @@ namespace ALfredoMochileiro.Models
         {
             this.CapacidadeMaxima = capacidadeMaxima;
             var rand = new Random();
-            int numItens = rand.Next(itensDisponiveis.Count());
-            if (numItens == 0)
-            {
-                numItens++;
-            }
+            //int numItens = rand.Next(itensDisponiveis.Count()/2,itensDisponiveis.Count());
+            int numItens = rand.Next(3,itensDisponiveis.Count());
+            
             for (int i = 0; i < numItens; i++)
             {
                 int id = rand.Next(itensDisponiveis.Count());
@@ -30,6 +28,15 @@ namespace ALfredoMochileiro.Models
                 this.PrecoTotal += itensDisponiveis[id].Preco;
                 itensDisponiveis.Remove(itensDisponiveis[id]);
             }
+            this.Aptidations = calcularAptidao();
+        }
+
+        private float calcularAptidao()
+        {
+            float aptidao = this.Capacidade;
+            aptidao += this.PrecoTotal * this.PrecoTotal;
+            if (this.Capacidade > this.CapacidadeMaxima) aptidao /= (this.Capacidade * this.Capacidade * this.Capacidade);
+            return aptidao;
         }
 
         public override string ToString()
@@ -37,10 +44,11 @@ namespace ALfredoMochileiro.Models
             string retorno = "";
             foreach (Item item in Itens)
             {
-                retorno += "\t" + item.ToString() + "\n";
+                retorno += "|\t" + item.ToString() + "\n";
             }
-            retorno += "Capacidade: " + this.Capacidade + "\n";
-            retorno += "Preço Total: " + this.PrecoTotal + "\n";
+            retorno += "|Capacidade: " + this.Capacidade + "\n";
+            retorno += "|Preço Total: " + this.PrecoTotal + "\n";
+            retorno += "|Aptidão: " + this.Aptidations + "\n";
             return retorno;
         }
     }
