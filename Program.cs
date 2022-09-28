@@ -38,18 +38,8 @@ namespace ALfredoMochileiro
                 Console.WriteLine("Mochila " + (i + 1) + "\n" + populacao[i]);
             }
 
-            aptidaoMaxima = getAptidaoMaxima(populacao);
             List<(Mochila moc, int inicio, int fim)> ranges = new List<(Mochila, int, int)>();
-            for (int j = 0; j < populacao.Count; j++)
-            {
-                int range = calculaRange(populacao[j].Aptidations, aptidaoMaxima);
-                if (j == 0)
-                    ranges.Add((populacao[j], 0, range));
-                else
-                    ranges.Add((populacao[j], ranges[j - 1].fim + 1, ranges[j - 1].fim + range));
-
-                Console.WriteLine("[ " + j + " ] - " + ranges[j].inicio + " | | " + ranges[j].fim);
-            }
+            ranges.AddRange(RoletaRussa(populacao));
             Random rand = new Random();
             int rangeSorteado = rand.Next(1000000);
             while (rangeSorteado > ranges[ranges.Count - 1].fim)
@@ -57,14 +47,21 @@ namespace ALfredoMochileiro
                 Console.WriteLine("AZAR DO CARAIO");
                 rangeSorteado = rand.Next(1000000);
             }
-            Mochila moc1 = ranges.Find(a => a.inicio <= rangeSorteado && a.fim >= rangeSorteado).moc;
-
+            var moc1 = ranges.Find(a => a.inicio <= rangeSorteado && a.fim >= rangeSorteado);
+            ranges.Remove(moc1);
+            ranges = new List<(Mochila, int, int)>();
+            ranges.AddRange(RoletaRussa(populacao, moc1.moc));
             rangeSorteado = rand.Next(1000000);
-            Mochila moc2 = ranges.Find(a => a.inicio <= rangeSorteado && a.fim >= rangeSorteado).moc;
+            while (rangeSorteado > ranges[ranges.Count - 1].fim)
+            {
+                Console.WriteLine("AZAR DO CARAIO");
+                rangeSorteado = rand.Next(1000000);
+            }
+            var moc2 = ranges.Find(a => a.inicio <= rangeSorteado && a.fim >= rangeSorteado);
 
             Console.WriteLine("GANHADORES:");
-            Console.WriteLine(moc1);
-            Console.WriteLine(moc2);
+            Console.WriteLine(moc1.moc);
+            Console.WriteLine(moc2.moc);
         }
 
         public static float getAptidaoMaxima(List<Mochila> mochilas)
@@ -76,12 +73,49 @@ namespace ALfredoMochileiro
             }
             return aptidaoMax;
         }
+        public static float getAptidaoMaxima(List<Mochila> mochilas, Mochila moc)
+        {
+            float aptidaoMax = 0;
+            foreach (Mochila mochila in mochilas)
+            {
+                if (!mochila.Equals(moc))
+                    aptidaoMax += mochila.Aptidations;
+            }
+            return aptidaoMax;
+        }
 
         public static int calculaRange(float aptidao, float aptidaoMaxima)
         {
             return (int)((aptidao / aptidaoMaxima) * 1000000);
         }
 
+        public static List<(Mochila, int, int)> RoletaRussa(List<Mochila> populacao, Mochila? mochila = null)
+        {
+            float aptidaoMaxima = 0;
+            if (mochila != null)
+            {
+                aptidaoMaxima = getAptidaoMaxima(populacao, mochila);
+            }
+            else
+            {
+                aptidaoMaxima = getAptidaoMaxima(populacao);
+            }
+            List<(Mochila moc, int inicio, int fim)> ranges = new List<(Mochila, int, int)>();
+            for (int j = 0, aux = 0; j < populacao.Count; j++)
+            {
+                if (!populacao[j].Equals(mochila))
+                {
+                    int range = calculaRange(populacao[j].Aptidations, aptidaoMaxima);
+                    if (j == 0 || aux == 0)
+                        ranges.Add((populacao[j], 0, range));
+                    else
+                        ranges.Add((populacao[j], ranges[aux - 1].fim + 1, ranges[aux - 1].fim + range));
 
+                    Console.WriteLine("[ " + aux + " ] - " + ranges[aux].inicio + " | | " + ranges[aux].fim);
+                    aux++;
+                }
+            }
+            return ranges;
+        }
     }
 }
