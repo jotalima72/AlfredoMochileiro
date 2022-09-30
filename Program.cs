@@ -10,9 +10,9 @@ namespace ALfredoMochileiro
     {
       //Variaveis 
       const float CapacidadeMaxima = 15;
-      const int NumMochilas = 10;
+      const int NumMochilas = 20;
       float aptidaoMaxima = 0;
-      Console.WriteLine("Hello Worlds");
+      //   Console.WriteLine("Hello Worlds");
       List<Item> itensDisponiveis = new List<Item>();
       List<Mochila> populacao = new List<Mochila>();
 
@@ -33,7 +33,6 @@ namespace ALfredoMochileiro
       Console.WriteLine("Querido usuário, quantas gerações você deseja que existam nessa linda pesquisa?");
       int geracoes = Convert.ToInt32(Console.ReadLine());
       int geracoesContabilizadas = (int)Math.Ceiling(geracoes / 10.0);
-
       Console.WriteLine("Querido usuário, e a taxa de mutação? Entre 0 e 100");
       int taxaMutacao = Convert.ToInt32(Console.ReadLine());
 
@@ -44,12 +43,21 @@ namespace ALfredoMochileiro
         populacao.Add(aux);
         aptidaoMaxima += aux.Aptidations;
       }
-
+      int pontoParada = 0;
       //Exibir varias gerações
       for (int contador = 0; contador < geracoes; contador++)
       {
         //Verificação de igualdade entre a geração 0 e a ultima geração
         if (populacao[0].Aptidations == populacao[populacao.Count - 1].Aptidations)
+        {
+          pontoParada++;
+        }
+        else
+        {
+          pontoParada = 0;
+        }
+        //Se os elementos das gerações 0 e a ultima forem iguais depois de 100x
+        if (pontoParada >= 100)
         {
           Console.WriteLine("Geração " + (contador + 1) + " foi a geração que se encontra todas as mochilas com a mesma aptidão");
           break;
@@ -57,7 +65,7 @@ namespace ALfredoMochileiro
 
         //Sortear de acordo com aptidão 
         populacao.Sort((a, b) => b.Aptidations.CompareTo(a.Aptidations));
-        Console.WriteLine(contador + " - " + geracoes);
+        Console.WriteLine((contador + 1) + " - " + geracoes);
         if (contador % geracoesContabilizadas == 0)
         {
           Console.WriteLine("================================ GERAÇÃO: " + (contador + 1) + "================================");
@@ -73,7 +81,7 @@ namespace ALfredoMochileiro
         int rangeSorteado = rand.Next(1000000);
         while (rangeSorteado > ranges[ranges.Count - 1].fim)
         {
-          Console.WriteLine("AZAR DO CARAIO");
+          Console.WriteLine("[AZAR DO CARAIO]");
           rangeSorteado = rand.Next(1000000);
         }
         var moc1 = ranges.Find(a => a.inicio <= rangeSorteado && a.fim >= rangeSorteado);
@@ -119,6 +127,7 @@ namespace ALfredoMochileiro
       }
       return aptidaoMax;
     }
+
     public static float getAptidaoMaxima(List<Mochila> mochilas, Mochila moc)
     {
       float aptidaoMax = 0;
@@ -168,22 +177,22 @@ namespace ALfredoMochileiro
     //Cruzamento pai e mãe (mochilas)
     public static (Mochila, Mochila) Cruzamento(Mochila m1, Mochila m2, List<Item> itensDisponiveis, int taxaMutacao)
     {
-
+      Random rand = new Random();
+      int divisor = rand.Next(itensDisponiveis.Count());
 
       //Criação do Filho 1
       List<Item> listaFilho1 = new List<Item>();
-      for (int i = 0; i < (int)Math.Ceiling(itensDisponiveis.Count() / 2.0); i++)
+      for (int i = 0; i < divisor; i++)
       {
         if (m1.GetItems().Contains(itensDisponiveis[i]))
           listaFilho1.Add(itensDisponiveis[i]);
       }
-      for (int i = itensDisponiveis.Count() - 1; i >= (int)Math.Floor(itensDisponiveis.Count() / 2.0); i--)
+      for (int i = itensDisponiveis.Count() - 1; i >= divisor; i--)
       {
 
         if (m2.GetItems().Contains(itensDisponiveis[i]))
           listaFilho1.Add(itensDisponiveis[i]);
       }
-      Random rand = new Random();
       int num = rand.Next(100) + 1;
       bool temMutacao = taxaMutacao >= num;
 
@@ -210,18 +219,18 @@ namespace ALfredoMochileiro
       //Criação do Filho 2
       List<Item> listaFilho2 = new List<Item>();
       //Intens da mae
-      for (int i = 0; i < (int)Math.Ceiling(itensDisponiveis.Count() / 2.0); i++)
+      for (int i = 0; i < divisor; i++)
       {
         if (m2.GetItems().Contains(itensDisponiveis[i]))
           listaFilho2.Add(itensDisponiveis[i]);
       }
       //Itens do pai
-      for (int i = itensDisponiveis.Count() - 1; i >= (int)Math.Floor(itensDisponiveis.Count() / 2.0); i--)
+      for (int i = itensDisponiveis.Count() - 1; i >= divisor; i--)
       {
         if (m1.GetItems().Contains(itensDisponiveis[i]))
           listaFilho2.Add(itensDisponiveis[i]);
       }
-      
+
       //Verifica se tem Mutação
       num = rand.Next(100) + 1;
       temMutacao = taxaMutacao >= num;
@@ -250,7 +259,7 @@ namespace ALfredoMochileiro
       //foreach (var item in filho1.GetItems())
       // {
       //  Console.WriteLine("Itens do filho 1: " + item);
-      //   };
+      // };
       Console.WriteLine("Apitidão do filho 1: " + filho1.Aptidations);
 
       //Exibição do filho 2
