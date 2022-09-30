@@ -18,7 +18,7 @@ namespace ALfredoMochileiro.Models
     {
       this.CapacidadeMaxima = capacidadeMaxima;
       var rand = new Random();
-      int numItens = rand.Next(3, itensDisponiveis.Count());
+      int numItens = rand.Next(4, itensDisponiveis.Count());
 
       for (int i = 0; i < numItens; i++)
       {
